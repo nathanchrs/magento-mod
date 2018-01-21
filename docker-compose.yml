@@ -1,0 +1,49 @@
+version: '2.0'
+services:
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - .:/opt/magento:ro
+
+  php:
+    build:
+      context: ./
+    volumes:
+      - .:/opt/magento
+      - magento_app_etc:/opt/magento/app/etc # Configs
+      - magento_pub_static:/opt/magento/pub/static # Static files and media
+      - /opt/magento/generated/ # Generated code - disposable
+      - /opt/magento/vendor # Modules (Composer) - disposable
+      - /opt/magento/var/ # Cache and reports - disposable
+    ports:
+      - "9000:9000"
+
+  mysql:
+    image: mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # - ./magento.sql:/docker-entrypoint-initdb.d/magento.sql:ro # For DB seeding
+    environment:
+      - MYSQL_ROOT_PASSWORD=[mysql_root_password]
+      - MYSQL_DATABASE=magento
+      - MYSQL_USER=magento
+      - MYSQL_PASSWORD=[mysql_password]
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+     - PMA_HOST=mysql
+    ports:
+     - 1234:80
+
+volumes:
+  magento_app_etc:
+    driver: local
+  magento_pub_static:
+    driver: local
+  mysql_data:
+    driver: local
