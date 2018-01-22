@@ -90,11 +90,12 @@ USER www-data
 COPY --chown=www-data:www-data . /opt/magento
 
 # Set data directory permissions
-# RUN chmod -R 0755 /opt/magento/vendor
-RUN chmod -R 0755 /opt/magento/app/etc
-RUN chmod -R 0755 /opt/magento/pub/static
-RUN chmod -R 0755 /opt/magento/var
-RUN chmod -R 0755 /opt/magento/generated
+# RUN chmod -R 0777 /opt/magento/vendor
+# RUN chmod -R 0777 /opt/magento/app/etc
+# RUN chmod -R 0777 /opt/magento/pub/static
+# RUN chmod -R 0777 /opt/magento/pub/media
+# RUN chmod -R 0777 /opt/magento/var
+# RUN chmod -R 0777 /opt/magento/generated
 
 # Install dependencies
 RUN composer install

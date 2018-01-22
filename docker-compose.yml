@@ -8,6 +8,10 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - .:/opt/magento:ro
+      - magento_app_etc:/opt/magento/app/etc # Configs
+      - magento_pub:/opt/magento/pub:ro # Static files and media - disposable
+    depends_on:
+      - php
 
   php:
     build:
@@ -15,12 +19,14 @@ services:
     volumes:
       - .:/opt/magento
       - magento_app_etc:/opt/magento/app/etc # Configs
-      - magento_pub_static:/opt/magento/pub/static # Static files and media
+      - magento_pub:/opt/magento/pub # Static files and media - disposable
       - /opt/magento/generated/ # Generated code - disposable
       - /opt/magento/vendor # Modules (Composer) - disposable
       - /opt/magento/var/ # Cache and reports - disposable
     ports:
       - "9000:9000"
+    depends_on:
+      - mysql
 
   mysql:
     image: mysql
@@ -36,14 +42,16 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
-     - PMA_HOST=mysql
+      - PMA_HOST=mysql
     ports:
-     - 1234:80
+      - 1234:80
+    depends_on:
+      - mysql
 
 volumes:
   magento_app_etc:
     driver: local
-  magento_pub_static:
+  magento_pub:
     driver: local
   mysql_data:
     driver: local
